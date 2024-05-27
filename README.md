@@ -1,6 +1,6 @@
 <!-- omit in toc -->
-# server-client-cleaning-robots
-Exercise: Build server/client app using Socket.IO and Kafka. Solve Robot Cleaner algo.
+# client-server-robot-cleaner
+Exercise: Build client/server app using Socket.IO and Kafka. Solve Robot Cleaner algo.
 
 <!-- omit in toc -->
 # Table of Contents:
