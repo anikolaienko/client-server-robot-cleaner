@@ -1,0 +1,3 @@
+algos:
+  clean:
+    directions: [LEFT, DOWN, RIGHT, UP]
