@@ -80,5 +80,3 @@ async def clean_level(name: str, level: LevelType, update_level: LevelUpdateFunc
 
             if not await update_level(level):
                 return False
-
-    return True
