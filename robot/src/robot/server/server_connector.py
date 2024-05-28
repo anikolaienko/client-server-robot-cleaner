@@ -11,21 +11,13 @@ from robot.models.state import RobotState
 from robot.models.types import LevelType
 from robot.utils.level_parser import parse_level
 
-SERVERS = {
-    "0": "http://0.0.0.0:8080/",
-    "1": "http://0.0.0.0:8081/"
-}
-
 sio = socketio.AsyncClient()
 state = RobotState()
 
 
-async def connect_to_server(server_id: str, robot_name: str):
+async def connect_to_server(server_port: str, robot_name: str):
     state.name = robot_name
-
-    server_url = SERVERS.get(server_id)
-    if server_url is None:
-        raise ValueError(f"Invalid server id `{server_id}`. Available servers: {SERVERS}")
+    server_url = f"http://0.0.0.0:{server_port}/"
     
     await sio.connect(server_url, auth=robot_name)
     await sio.wait()

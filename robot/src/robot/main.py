@@ -9,4 +9,4 @@ if __name__ == '__main__':
     cli_args = parse_cli()
     
     with keep_alive():
-        asyncio.run(connect_to_server(cli_args.server_id, cli_args.name))
+        asyncio.run(connect_to_server(cli_args.port, cli_args.name))

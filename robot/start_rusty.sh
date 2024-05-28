@@ -1,3 +1,3 @@
 export PYTHONPATH=$PYTHONPATH:$(pwd)/src
 
-./.venv/bin/python src/robot/main.py -n Rusty -s 0
+./.venv/bin/python src/robot/main.py -n Rusty -p 8080

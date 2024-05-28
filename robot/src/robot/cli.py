@@ -5,13 +5,13 @@ from dataclasses import dataclass
 @dataclass
 class CLIArgs:
     name: str
-    server_id: str
+    port: str
 
 
 def parse_cli() -> CLIArgs:
     parser = ArgumentParser()
     parser.add_argument("-n", "--name", required=True)
-    parser.add_argument("-s", "--server", dest="server_id", required=True)
+    parser.add_argument("-p", "--port", required=True)
     args = parser.parse_args()
 
     return CLIArgs(**vars(args))
