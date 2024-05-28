@@ -17,6 +17,14 @@ def _find_start(level: LevelType) -> Position:
     
     raise ValueError(f"No starting position found on level.")
 
+
+def _all_clean(level: LevelType) -> bool:
+    rows = len(level)
+    cols = len(level[0])
+
+    return all(level[row][col] != "-" for row in range(rows) for col in range(cols))
+
+
 def _within_level(level: LevelType, row: int, col: int):
     rows = len(level)
     cols = len(level[0])
@@ -56,14 +64,14 @@ def _find_route_to_next_position(
     return []
 
 
-async def clean_level(name: str, level: LevelType, update_level: LevelUpdateFunc) -> None:
+async def clean_level(name: str, level: LevelType, update_level: LevelUpdateFunc) -> bool:
     curr_pos = _find_start(level)
     directions = get_directions(name)
 
     while True:
         route = _find_route_to_next_position(level, curr_pos, directions)
         if not route:
-            return
+            return _all_clean(level)
 
         for next_pos in route:
             level[curr_pos[0]][curr_pos[1]] = " "
@@ -71,4 +79,6 @@ async def clean_level(name: str, level: LevelType, update_level: LevelUpdateFunc
             curr_pos = next_pos
 
             if not await update_level(level):
-                return
+                return False
+
+    return True

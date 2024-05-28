@@ -80,13 +80,16 @@ async def clean(data: dict[str, str]):
         level = parse_level(level_str)
         display_level(level)
 
-        await clean_level(state.name, level, cleaning_refresh)
+        is_cleaned = await clean_level(state.name, level, cleaning_refresh)
 
-        if state.reset:
-            state.reset = False
-            log_warning("Stopped cleaning.")
-        else:
+        if is_cleaned:
             log_success("Done", "Level is cleaned successfully.")
+        else:
+            if state.reset:
+                state.reset = False
+                log_warning("Stopped cleaning.")
+            else:
+                log_warning("Partially cleaned. Some parts of level are not accessible.")
     except Exception as ex:
         log_error(f"Failed to clean the level. Error: {ex}\nTrace:{traceback.extract_tb(ex.__traceback__)}")
     finally:
