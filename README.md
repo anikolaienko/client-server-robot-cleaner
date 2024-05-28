@@ -4,15 +4,25 @@ Exercise: Build client/server app using Socket.IO and Kafka. Solve Robot Cleaner
 
 <!-- omit in toc -->
 # Table of Contents:
+- [Screenshots](#screenshots)
+  - [Run 1](#run-1)
+  - [Run 2](#run-2)
 - [Robot Cleaner algorithm](#robot-cleaner-algorithm)
 - [System design](#system-design)
 - [Architecture diagram](#architecture-diagram)
 - [Requirements](#requirements)
 - [Setup](#setup)
 - [Play time](#play-time)
-- [Screenshots](#screenshots)
-  - [Run 1](#run-1)
-  - [Run 2](#run-2)
+
+# Screenshots
+Should be the last section but everyone likes visuals 😏
+## Run 1
+Server: 1. Robots: Rusty floor 1
+![failed to load screenshot](/docs/screenshot_rusty_level_1.png)
+
+## Run 2
+Servers: 1 and 2. Robots: Rusty level 0, Sassy level 1, Gizmo level 2
+![failed to load screenshot](/docs/screenshot_all_robots.png)
 
 
 # Robot Cleaner algorithm
@@ -127,12 +137,3 @@ clean robot Rusty level 0
 # same as
 clean level 0 robot Rusty
 ```
-
-# Screenshots
-## Run 1
-Server: 1. Robots: Rusty floor 1
-![failed to load screenshot](/docs/screenshot_rusty_level_1.png)
-
-## Run 2
-Servers: 1 and 2. Robots: Rusty level 0, Sassy level 1, Gizmo level 2
-![failed to load screenshot](/docs/screenshot_all_robots.png)
