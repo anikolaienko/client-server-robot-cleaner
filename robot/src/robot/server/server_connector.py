@@ -6,9 +6,9 @@ import socketio.exceptions
 
 from robot.version import get_version
 from robot.logger import log, log_success, log_error, log_warning, display_level
-from robot.algos.clean_level import clean_level
+from robot.algos.clean_blind_with_trace import clean_level
 from robot.models.state import RobotState
-from robot.models.types import LevelType
+from robot.models.types import LevelType, Direction
 from robot.utils.level_parser import parse_level
 
 sio = socketio.AsyncClient()
@@ -22,6 +22,21 @@ async def connect_to_server(server_port: str, robot_name: str):
     await sio.connect(server_url, auth=robot_name)
     await sio.wait()
 
+async def execute_algo(robot_name: str):
+    level = """
+- - - - - - x - - -
+x - - - x - - x - -
+- - - - - - - - - -
+x x x - - - x x x -
+- - - - - - - - x -
+- - - - - - - - - -
+- - - - - - - - - -
+x - - - x - - - - -
+- - - - - - - - - -
+- - - - - R - - x -
+"""
+    await clean({"level": level, "speed": 5})
+    await asyncio.sleep(10)
 
 @sio.event
 async def connect():
@@ -32,7 +47,9 @@ async def disconnect():
     log_success('Disconnected from server')
 
 
-async def cleaning_refresh(level: LevelType) -> bool:
+async def cleaning_refresh(level: LevelType, direction: Direction) -> bool:
+    display_level(level, direction)
+
     if state.reset:
         return False
     
@@ -41,8 +58,7 @@ async def cleaning_refresh(level: LevelType) -> bool:
     else:
         while state.paused:
             await asyncio.sleep(state.delay)
-
-    display_level(level)
+    
     return True
 
 @sio.event
@@ -70,8 +86,6 @@ async def clean(data: dict[str, str]):
         state.cleaning = True
 
         level = parse_level(level_str)
-        display_level(level)
-
         is_cleaned = await clean_level(state.name, level, cleaning_refresh)
 
         if is_cleaned:

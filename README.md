@@ -49,7 +49,7 @@ We have 3 robots available:
 
 There are couple of differences between the robots:
 * **Rusty** and **Sassy** prefer to connect to [server_1](/server/start_server_1.sh) on post 8080 when **Gizmo** prefers [server_2](/server/start_server_2.sh) on port 8081.
-* Each robot has a preference when doing a cleaning. E.g. **Rusty** likes going UP first, when **Sassy** choses to go LEFT. Configs are described in [robot_configs/data](/robot/src/robot/robot_configs/data/) files.
+* Each robot has a preference when doing a cleaning. E.g. **Rusty** likes going NORTH first, when **Sassy** choses to go WEST. Configs are described in [robot_configs/data](/robot/src/robot/robot_configs/data/) files.
 
 Two servers **server_1** and **server_2** are connected to Docker hosted Kafka service. This is where **server_1** and **server_2** get commands to send to robots.
 

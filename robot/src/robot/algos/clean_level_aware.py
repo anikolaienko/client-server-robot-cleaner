@@ -1,35 +1,8 @@
-from typing import Callable, Awaitable
 from heapq import heappush, heappop
 
-from robot.models.types import LevelType
-from robot.algos.clean_level_configs import get_directions
-
-Position = tuple[int, int]
-LevelUpdateFunc = Callable[[list[list[str]]], Awaitable[bool]]
-
-
-def _find_start(level: LevelType) -> Position:
-    for row_idx in range(len(level)):
-        row = level[row_idx]
-        for col_idx in range(len(row)):
-            if row[col_idx] == "R":
-                return row_idx, col_idx
-    
-    raise ValueError(f"No starting position found on level.")
-
-
-def _all_clean(level: LevelType) -> bool:
-    rows = len(level)
-    cols = len(level[0])
-
-    return all(level[row][col] != "-" for row in range(rows) for col in range(cols))
-
-
-def _within_level(level: LevelType, row: int, col: int):
-    rows = len(level)
-    cols = len(level[0])
-
-    return row >= 0 and row < rows and col >= 0 and col < cols
+from robot.models.types import LevelType, Position, LevelUpdateFunc
+from robot.algos.robot_config_provider import get_directions
+from robot.algos.level_utils import find_start, is_within_level, is_fully_cleaned
 
 
 def _find_route_to_next_position(
@@ -48,7 +21,7 @@ def _find_route_to_next_position(
             new_row, new_col = row + row_delta, col + col_delta
             new_pos = (new_row, new_col)
 
-            if _within_level(level, new_row, new_col) and new_pos not in parents:
+            if is_within_level(level, new_row, new_col) and new_pos not in parents:
                 if level[new_row][new_col] == "-":    # good position, build and return the route 
                     route = [new_pos]
                     while pos != parents[pos]:        # until position parent is position itself: start position
@@ -65,13 +38,13 @@ def _find_route_to_next_position(
 
 
 async def clean_level(name: str, level: LevelType, update_level: LevelUpdateFunc) -> bool:
-    curr_pos = _find_start(level)
+    curr_pos = find_start(level)
     directions = get_directions(name)
 
     while True:
         route = _find_route_to_next_position(level, curr_pos, directions)
         if not route:
-            return _all_clean(level)
+            return is_fully_cleaned(level)
 
         for next_pos in route:
             level[curr_pos[0]][curr_pos[1]] = " "

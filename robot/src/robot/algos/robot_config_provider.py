@@ -1,18 +1,15 @@
 from robot.robot_configs.config_provider import get_algo_configs
 from robot.logger import log_success, log_error
+from robot.algos.directions import NORTH, SOUTH, EAST, WEST
 
 ALGO_NAME = "clean"
-UP = (-1, 0)
-DOWN = (1, 0)
-LEFT = (0, -1)
-RIGHT = (0, 1)
 STR_TO_DIRECTION = {
-    "UP": UP,
-    "DOWN": DOWN,
-    "LEFT": LEFT,
-    "RIGHT": RIGHT
+    "NORTH": NORTH,
+    "SOUTH": SOUTH,
+    "EAST": EAST,
+    "WEST": WEST,
 }
-DEFAULT_DIRECTIONS = [UP, LEFT, DOWN, RIGHT]
+DEFAULT_DIRECTIONS = [NORTH, WEST, SOUTH, EAST]
 
 
 def get_directions(robot_name: str) -> list[tuple[int, int]]:

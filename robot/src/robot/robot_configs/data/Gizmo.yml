@@ -1,3 +1,3 @@
 algos:
   clean:
-    directions: [DOWN, LEFT, UP, RIGHT]
+    directions: [SOUTH, WEST, NORTH, EAST]
