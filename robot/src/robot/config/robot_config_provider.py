@@ -5,7 +5,7 @@ from yaml import safe_load
 
 from robot.logger import log_warning
 
-CONFIGS_DATA_DIR = Path(__file__).parent / "data"
+CONFIGS_DATA_DIR = Path(__file__).parents[2] / "data" / "robot_configs"
 
 
 def get_algo_configs(robot_name: str, algo: str) -> dict[str, Any]:

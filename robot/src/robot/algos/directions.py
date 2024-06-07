@@ -24,15 +24,17 @@ OPPOSITE = {
     EAST: WEST
 }
 
-# DIRECTION_TO_CHAR = {
-#     NORTH: "\u25B2",
-#     SOUTH: "\u25BC",
-#     EAST: "\u25BA",
-#     WEST: "\u25C4"
-# }
 DIRECTION_TO_CHAR = {
-    NORTH: "\u2191",
-    SOUTH: "\u2193",
-    EAST: "\u2192",
-    WEST: "\u2190"
+    NORTH: ":up_arrow-emoji:",
+    SOUTH: ":down_arrow-emoji:",
+    EAST: ":right_arrow-emoji:",
+    WEST: ":left_arrow-emoji:"
 }
+
+# alternative
+# DIRECTION_TO_CHAR = {
+#     NORTH: ":arrow_up_small-emoji:",
+#     SOUTH: ":arrow_down_small-emoji:",
+#     EAST: ":arrow_forward-emoji:",
+#     WEST: ":arrow_backward-emoji:"
+# }
