@@ -1,1 +1,0 @@
-LevelType = list[list[str]]

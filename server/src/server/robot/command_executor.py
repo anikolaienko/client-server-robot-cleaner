@@ -30,7 +30,7 @@ class CommandExecutor:
             raise ExecutionError(f"No robot with name `{robot_name}` is connected.")
         return sid
 
-    async def run_clean_level(self, robot: str, level: str, speed: int = 1):
+    async def run_clean_level(self, robot: str, level: str, speed: int = 1, algo: str = "blind_with_trace"):
         sid = self._get_sid(robot)
         level_structure = get_level(level)
         if level_structure is None:
@@ -38,7 +38,8 @@ class CommandExecutor:
         
         data = {
             "level": level_structure,
-            "speed": speed
+            "speed": speed,
+            "algo": algo
         }
 
         await self._sio.emit("clean", data=data, to=sid)

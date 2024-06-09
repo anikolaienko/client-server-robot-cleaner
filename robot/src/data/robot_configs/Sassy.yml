@@ -1,0 +1,3 @@
+algos:
+  clean:
+    directions: [WEST, SOUTH, EAST, NORTH]

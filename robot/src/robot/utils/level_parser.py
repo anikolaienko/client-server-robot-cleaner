@@ -1,4 +1,4 @@
-from robot.models.types import LevelType
+from robot.types import LevelType
 
 
 def parse_level(level: str) -> LevelType:

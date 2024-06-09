@@ -6,22 +6,22 @@ import socketio.exceptions
 
 from robot.version import get_version
 from robot.logger import log, log_success, log_error, log_warning, display_level
-from robot.algos.clean_level import clean_level
-from robot.models.state import RobotState
-from robot.models.types import LevelType
+from robot.algos.clean_algos import ALGOS
+from robot.types import LevelType
+from robot.models import RobotState, Stats, Direction
 from robot.utils.level_parser import parse_level
 
 sio = socketio.AsyncClient()
 state = RobotState()
 
 
-async def connect_to_server(server_port: str, robot_name: str):
+async def connect_to_server(server_port: str, robot_name: str, speed: int):
     state.name = robot_name
+    state.speed = speed
     server_url = f"http://0.0.0.0:{server_port}/"
     
     await sio.connect(server_url, auth=robot_name)
     await sio.wait()
-
 
 @sio.event
 async def connect():
@@ -32,7 +32,9 @@ async def disconnect():
     log_success('Disconnected from server')
 
 
-async def cleaning_refresh(level: LevelType) -> bool:
+async def cleaning_refresh(level: LevelType, stats: Stats, direction: Direction) -> bool:
+    display_level(level, stats, direction)
+
     if state.reset:
         return False
     
@@ -41,13 +43,15 @@ async def cleaning_refresh(level: LevelType) -> bool:
     else:
         while state.paused:
             await asyncio.sleep(state.delay)
-
-    display_level(level)
+    
     return True
 
 @sio.event
 async def clean(data: dict[str, str]):
     state.reset = False
+
+    if state.name is None:
+        state.name = data.get("robot_name")
     
     if state.cleaning:
         msg = "Received another `clean` command while already cleaning."
@@ -64,15 +68,23 @@ async def clean(data: dict[str, str]):
     
     if "speed" in data:
         state.speed = int(data["speed"])
+
+    algo_name = data.get("algo")
+    if algo_name is None:
+        algo_name, algo_runner = next(iter(ALGOS.items()))
+        log_warning(f"No algo specified. Random choice: `{algo_name}`")
+    elif algo_name not in ALGOS:
+        log_error(f"Algo with name `{algo_name}` not found. Please use one the following: {ALGOS.keys()}")
+        return
+    else:
+        algo_runner = ALGOS[algo_name]
     
-    log_success(f"Running level cleaning with speed {state.speed} ...")
+    log_success(f"Running cleaning algo `{algo_name}` with speed {state.speed} ...")
     try:
         state.cleaning = True
 
         level = parse_level(level_str)
-        display_level(level)
-
-        is_cleaned = await clean_level(state.name, level, cleaning_refresh)
+        is_cleaned = await algo_runner(state.name, level, cleaning_refresh)
 
         if is_cleaned:
             log_success("Done", "Level is cleaned successfully.")
