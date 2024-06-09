@@ -11,6 +11,6 @@ if __name__ == '__main__':
     
     with keep_alive():
         if cli_args.standalone:
-            asyncio.run(clean_level(cli_args.name, cli_args.level, cli_args.speed))
+            asyncio.run(clean_level(cli_args.name, cli_args.algo, cli_args.level, cli_args.speed))
         else:
             asyncio.run(connect_to_server(cli_args.port, cli_args.name, cli_args.speed))

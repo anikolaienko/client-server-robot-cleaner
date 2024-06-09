@@ -1,5 +1,3 @@
-from typing import Optional
-
 from rich.layout import Layout
 from rich.panel import Panel
 from rich.table import Table, Column
@@ -8,8 +6,7 @@ from rich.text import Text
 from rich import box
 
 from robot.models.stats import Stats
-from robot.models.types import Direction
-from robot.algos.directions import DIRECTION_TO_CHAR
+from robot.models import Direction
 
 
 MAX_LOG_LINES = 100
@@ -69,17 +66,17 @@ def log_warning(msg: str):
     _layout["logs"].update(_logs_panel)
 
 
-def format_ch(ch: str, direction: Optional[Direction]):
+def format_ch(ch: str, direction: Direction):
     if ch == "x":
         return ":red_square-emoji:"
     if ch == "R":
-        return DIRECTION_TO_CHAR[direction] if direction is not None else ":smiley-emoji:"
+        return str(direction)
     if ch == "-":
-        return "[on green]:money_bag-emoji:[/]" # beer, pizza, gem, money_bag
+        return "[on green]:money_bag-emoji:[/]" # other options: beer, pizza, gem
     return ch
 
 
-def display_level(level: list[list[str]], stats: Stats, direction: Optional[Direction] = None):
+def display_level(level: list[list[str]], stats: Stats, direction: Direction):
     columns = [Column(min_width=2) for i in range(len(level[0]))]
     table = Table(*columns, show_lines=True, show_header=False, box=box.ROUNDED)
 
@@ -88,7 +85,5 @@ def display_level(level: list[list[str]], stats: Stats, direction: Optional[Dire
             *(format_ch(ch, direction) for ch in row)
         )    
 
-    stats_text = Text(f"Moves (attempted): {stats.moves} ({stats.moves + stats.failed_moves}), Turns: {stats.turns}")
-    
     _layout["level"]["table"].update(Panel(table, subtitle="level layout"))
-    _layout["level"]["stats"].update(Panel(stats_text, subtitle="stats"))
+    _layout["level"]["stats"].update(Panel(Text(str(stats)), subtitle="stats"))

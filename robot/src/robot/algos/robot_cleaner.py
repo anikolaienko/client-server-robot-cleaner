@@ -1,6 +1,6 @@
-from robot.models.types import LevelType, LevelUpdateFunc, Direction
+from robot.types import LevelType, LevelUpdateFunc
+from robot.models import Direction
 from robot.models.stats import Stats
-from robot.algos.directions import LEFT_TURN, RIGHT_TURN
 from robot.algos.level_utils import find_start, is_within_level
 
 
@@ -17,17 +17,17 @@ class RobotCleaner:
         Returns true if next cell is open and robot moves into the cell.
         Returns false if next cell is obstacle and robot stays on the current cell.
         """
-        row, col = (self._position[0] + self._direction[0], self._position[1] + self._direction[1])
-        if not is_within_level(self._level, row, col) or self._level[row][col] == "x":
-            self._stats.failed_moves += 1
+        new_pos = self._position + self._direction
+        if not is_within_level(self._level, new_pos) or self._level[new_pos.row][new_pos.col] == "x":
+            self._stats.inc_failed_moves()
             await self._update_level(self._level, self._stats, self._direction)
             return False
         
-        self._level[self._position[0]][self._position[1]] = " "
-        self._level[row][col] = "R"
+        self._level[self._position.row][self._position.col] = " "
+        self._level[new_pos.row][new_pos.col] = "R"
 
-        self._position = (row, col)
-        self._stats.moves += 1
+        self._position = new_pos
+        self._stats.inc_moves()
         await self._update_level(self._level, self._stats, self._direction)
         return True
 
@@ -36,8 +36,8 @@ class RobotCleaner:
         Robot will stay on the same cell after calling turnLeft.
         Each turn will be 90 degrees.
         """
-        self._direction = LEFT_TURN[self._direction]
-        self._stats.turns += 1
+        self._direction = self._direction.turn_left()
+        self._stats.inc_turns()
         await self._update_level(self._level, self._stats, self._direction)
     
     async def turnRight(self) -> None:
@@ -45,8 +45,8 @@ class RobotCleaner:
         Robot will stay on the same cell after calling turnRight.
         Each turn will be 90 degrees.
         """
-        self._direction = RIGHT_TURN[self._direction]
-        self._stats.turns += 1
+        self._direction = self._direction.turn_right()
+        self._stats.inc_turns()
         await self._update_level(self._level, self._stats, self._direction)
 
     async def clean(self) -> None:

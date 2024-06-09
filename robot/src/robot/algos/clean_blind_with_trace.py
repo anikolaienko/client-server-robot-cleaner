@@ -1,5 +1,6 @@
-from robot.models.types import LevelType, LevelUpdateFunc, Direction
-from robot.algos.directions import NORTH, LEFT_TURN, RIGHT_TURN, OPPOSITE
+from robot.types import LevelType, LevelUpdateFunc
+from robot.models import Position, Direction
+from robot.models.directions import NORTH
 from robot.algos.robot_cleaner import RobotCleaner
 from robot.algos.level_utils import is_fully_cleaned
 
@@ -8,9 +9,9 @@ async def _turn_robot(robot: RobotCleaner, curr_direction: Direction, new_direct
     if curr_direction == new_direction:
         return new_direction
     
-    if LEFT_TURN[curr_direction] == new_direction:
+    if curr_direction.turn_left() == new_direction:
         await robot.turnLeft()
-    elif RIGHT_TURN[curr_direction] == new_direction:
+    elif curr_direction.turn_right() == new_direction:
         await robot.turnRight()
     else:
         await robot.turnLeft()
@@ -20,16 +21,19 @@ async def _turn_robot(robot: RobotCleaner, curr_direction: Direction, new_direct
 
 async def _clean_level(robot: RobotCleaner, _direction: Direction) -> None:
     # TODO: think of a patterns: follow the wall, spiral outwards, spiral inwards
-    curr_pos, curr_dir = (0, 0), _direction
+    curr_pos, curr_dir = Position(0, 0), _direction
     visited = set([curr_pos])
     trace = []
-
-    to_visit = [(curr_pos, dir) for dir in (OPPOSITE[curr_dir], LEFT_TURN[curr_dir], RIGHT_TURN[curr_dir], curr_dir)]
+    
+    to_visit = [
+        (curr_pos, dir)
+        for dir in (curr_dir.opposite(), curr_dir.turn_left(), curr_dir.turn_right(), curr_dir)
+    ]
     
     while to_visit:
         visit_pos, visit_dir = to_visit.pop()
 
-        new_pos = (visit_pos[0] + visit_dir[0], visit_pos[1] + visit_dir[1])
+        new_pos = visit_pos + visit_dir
         if new_pos in visited:
             # no need to go there, cause already visited
             continue
@@ -39,21 +43,22 @@ async def _clean_level(robot: RobotCleaner, _direction: Direction) -> None:
             trace_direction = trace.pop()
             curr_dir = await _turn_robot(robot, curr_dir, trace_direction)
             await robot.move()
-            curr_pos = (curr_pos[0] + curr_dir[0], curr_pos[1] + curr_dir[1])
+            curr_pos = curr_pos + curr_dir
 
         curr_dir = await _turn_robot(robot, curr_dir, visit_dir)
 
         if await robot.move():
             curr_pos = new_pos
-            trace.append(OPPOSITE[curr_dir])
+            trace.append(curr_dir.opposite())
             to_visit.extend([
-                (new_pos, LEFT_TURN[curr_dir]),
-                (new_pos, RIGHT_TURN[curr_dir]),
+                (new_pos, curr_dir.turn_left()),
+                (new_pos, curr_dir.turn_right()),
                 (new_pos, curr_dir)
             ])
-            visited.add(new_pos)
             await robot.clean()
 
+        visited.add(new_pos)
+        
 
 async def clean_level(name: str, level: LevelType, update_level: LevelUpdateFunc) -> bool:
     init_direction = NORTH
